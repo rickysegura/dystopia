@@ -139,6 +139,10 @@ def run_game_loop(screen, screen_width, screen_height):
     Returns:
         str: 'quit' to exit program, 'menu' to return to menu
     """
+
+    # Pause menu music
+    pygame.mixer.music.pause()
+
     # Colors
     BLACK = (0, 0, 0)
     
@@ -211,7 +215,7 @@ def run_game():
     SCREEN_HEIGHT = 600
     
     # Set up the display
-    screen = setup_display(SCREEN_WIDTH, SCREEN_HEIGHT, "Chiraq, Inc.")
+    screen = setup_display(SCREEN_WIDTH, SCREEN_HEIGHT, "Dystopia")
     
     # Create start screen
     start_screen = StartScreen(SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -223,6 +227,7 @@ def run_game():
     
     # Current game state
     game_state = MENU
+    previous_state = None
     
     # Main game loop
     clock = pygame.time.Clock()
@@ -233,6 +238,15 @@ def run_game():
         for event in events:
             if event.type == pygame.QUIT:
                 running = False
+        
+        # Check if state changed
+        if previous_state != game_state:
+            if game_state == MENU:
+                # Potentially restart menu music if it was stopped
+                if not pygame.mixer.music.get_busy() and start_screen.music_playing:
+                    pygame.mixer.music.unpause()
+            
+            previous_state = game_state
         
         # Handle different game states
         if game_state == MENU:

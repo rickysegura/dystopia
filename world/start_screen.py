@@ -11,6 +11,27 @@ import sys
 from utils import load_image
 
 
+def load_audio(name):
+    """
+    Load an audio file from the assets directory.
+    
+    Args:
+        name (str): The filename of the audio file in the assets directory
+        
+    Returns:
+        pygame.mixer.Sound: The loaded audio file, or None if loading failed
+    """
+    fullname = os.path.join('assets', name)
+    try:
+        pygame.mixer.init()
+        sound = pygame.mixer.Sound(fullname)
+        return sound
+    except pygame.error as message:
+        print(f"Cannot load audio: {name}")
+        print(message)
+        return None
+
+
 class Button:
     """A class to create interactive buttons for the start screen."""
     
@@ -64,6 +85,11 @@ class StartScreen:
         self.DARK_GRAY = (40, 40, 40)
         self.LIGHT_GRAY = (150, 150, 150)
         
+        # Initialize fonts first
+        pygame.font.init()
+        self.title_font = pygame.font.Font(None, 80)
+        self.button_font = pygame.font.Font(None, 50)
+        
         # Load background image
         try:
             self.background = load_image('background.png')
@@ -81,17 +107,39 @@ class StartScreen:
             self.logo_rect = self.logo.get_rect(centerx=screen_width//2, y=screen_height//7)
         except:
             self.logo = None
-            
-        # Initialize fonts
-        pygame.font.init()
-        self.title_font = pygame.font.Font(None, 80)
-        self.button_font = pygame.font.Font(None, 50)
         
         # Create title text if no logo
         if not self.logo:
-            self.title_text = self.title_font.render("CHIRAQ APOCALYPSE", True, self.WHITE)
+            self.title_text = self.title_font.render("DYSTOPIA", True, self.WHITE)
             self.title_rect = self.title_text.get_rect(centerx=screen_width//2, y=screen_height//6)
-            
+        
+        # Initialize pygame mixer if not already initialized
+        if not pygame.mixer.get_init():
+            pygame.mixer.init()
+        
+        # Load background music
+        try:
+            pygame.mixer.music.load(os.path.join('assets', 'background_music.mp3'))
+            pygame.mixer.music.set_volume(0.5)  # Set to 50% volume
+            pygame.mixer.music.play(-1)  # -1 means loop indefinitely
+            self.music_playing = True
+        except:
+            print("Could not load background music")
+            self.music_playing = False
+        
+        # Now create the music button after font initialization
+        self.music_button = Button(
+            screen_width - 50,  # Position on the right side
+            10,                # Position at the top
+            40,                # Width
+            40,                # Height
+            "||",              # Unicode speaker symbol
+            self.button_font,  # Now this exists
+            self.WHITE,
+            self.DARK_GRAY,
+            self.RED
+        )
+        
         # Create buttons
         button_width = 200
         button_height = 60
@@ -143,6 +191,9 @@ class StartScreen:
             screen.blit(self.background, (0, 0))
         else:
             screen.fill(self.BLACK)
+        
+        # Draw music control button
+        self.music_button.draw(screen)
             
         # Draw title/logo
         if self.logo:
@@ -173,6 +224,7 @@ class StartScreen:
         self.play_button.check_hover(mouse_pos)
         self.options_button.check_hover(mouse_pos)
         self.quit_button.check_hover(mouse_pos)
+        self.music_button.check_hover(mouse_pos)
         
         # Check for button clicks
         for event in events:
@@ -182,5 +234,26 @@ class StartScreen:
                 return 'options'
             elif self.quit_button.is_clicked(event):
                 return 'quit'
+            elif self.music_button.is_clicked(event):
+                self.toggle_music()
                 
         return None
+    
+    def toggle_music(self):
+        """Toggle background music on/off."""
+        if pygame.mixer.music.get_busy():
+            pygame.mixer.music.pause()
+            self.music_button.text = "|>"  # Unicode muted speaker
+            self.music_playing = False
+        else:
+            pygame.mixer.music.unpause()
+            self.music_button.text = "||"  # Unicode speaker
+            self.music_playing = True
+        
+        # Update the button text
+        self.music_button.text_surf = self.music_button.font.render(
+            self.music_button.text, True, self.music_button.text_color
+        )
+        self.music_button.text_rect = self.music_button.text_surf.get_rect(
+            center=self.music_button.rect.center
+        )
