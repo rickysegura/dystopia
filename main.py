@@ -14,6 +14,7 @@ import sys
 import os
 from entities.player import Player
 from world.game_platform import Platform
+from world.start_screen import StartScreen  # Import the new StartScreen module
 
 
 def setup_display(width, height, title):
@@ -102,15 +103,17 @@ def handle_events(player):
         player (Player): The player object to control
         
     Returns:
-        bool: False if the game should quit, True otherwise
+        str: 'quit' to exit program, 'menu' to return to menu, or None to continue
     """
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            return False
+            return 'quit'
         
         if event.type == pygame.KEYDOWN:
             if event.key in (pygame.K_UP, pygame.K_w, pygame.K_SPACE):
                 player.jump()
+            elif event.key == pygame.K_ESCAPE:
+                return 'menu'
     
     # Handle player movement
     keys = pygame.key.get_pressed()
@@ -121,50 +124,49 @@ def handle_events(player):
     else:
         player.stop()
         
-    return True
+    return None
 
 
-def run_game():
+def run_game_loop(screen, screen_width, screen_height):
     """
-    Initialize and run the main game loop.
+    Run the main gameplay loop.
     
-    This function contains the complete game lifecycle, from initialization
-    to the main loop and cleanup.
+    Args:
+        screen (pygame.Surface): The display surface
+        screen_width (int): Width of the game window
+        screen_height (int): Height of the game window
+        
+    Returns:
+        str: 'quit' to exit program, 'menu' to return to menu
     """
-    # Initialize pygame
-    pygame.init()
-    
-    # Game constants
-    SCREEN_WIDTH = 800
-    SCREEN_HEIGHT = 600
-    
     # Colors
     BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    GREEN = (0, 255, 0)
-    BLUE = (0, 0, 255)
-    RED = (255, 0, 0)
-    
-    # Set up the display
-    screen = setup_display(SCREEN_WIDTH, SCREEN_HEIGHT, "Chiraq Apocalypse")
     
     # Load background
-    background_img = load_game_background(SCREEN_WIDTH, SCREEN_HEIGHT)
+    background_img = load_game_background(screen_width, screen_height)
     
     # Create platforms and sprite groups
-    all_sprites, platforms = create_platforms(SCREEN_HEIGHT, SCREEN_WIDTH)
+    all_sprites, platforms = create_platforms(screen_height, screen_width)
     
     # Create player
-    player = Player(100, 100, platforms, SCREEN_WIDTH, SCREEN_HEIGHT)
+    player = Player(100, 100, platforms, screen_width, screen_height)
     all_sprites.add(player)
     
     # Game loop
     clock = pygame.time.Clock()
     running = True
+    result = 'menu'  # Default return to menu
     
     while running:
         # Process events
-        running = handle_events(player)
+        event_result = handle_events(player)
+        
+        if event_result == 'quit':
+            result = 'quit'
+            running = False
+        elif event_result == 'menu':
+            result = 'menu'
+            running = False
         
         # Update game state
         all_sprites.update()
@@ -177,6 +179,11 @@ def run_game():
         
         all_sprites.draw(screen)
         
+        # Add ESC key hint
+        hint_font = pygame.font.Font(None, 24)
+        hint_text = hint_font.render("Press ESC to return to menu", True, (255, 255, 255))
+        screen.blit(hint_text, (10, 10))
+        
         # Uncomment to debug collision boxes
         #player.draw_collision_box(screen)
     
@@ -184,6 +191,93 @@ def run_game():
         pygame.display.flip()
         
         # Control game speed
+        clock.tick(60)
+        
+    return result
+
+
+def run_game():
+    """
+    Initialize and run the game with start screen.
+    
+    This function contains the complete game lifecycle, from initialization
+    to the main loop and cleanup.
+    """
+    # Initialize pygame
+    pygame.init()
+    
+    # Game constants
+    SCREEN_WIDTH = 800
+    SCREEN_HEIGHT = 600
+    
+    # Set up the display
+    screen = setup_display(SCREEN_WIDTH, SCREEN_HEIGHT, "Chiraq Apocalypse")
+    
+    # Create start screen
+    start_screen = StartScreen(SCREEN_WIDTH, SCREEN_HEIGHT)
+    
+    # Game states
+    MENU = 0
+    PLAYING = 1
+    OPTIONS = 2
+    
+    # Current game state
+    game_state = MENU
+    
+    # Main game loop
+    clock = pygame.time.Clock()
+    running = True
+    
+    while running:
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
+        
+        # Handle different game states
+        if game_state == MENU:
+            action = start_screen.update(events)
+            
+            if action == 'play':
+                game_state = PLAYING
+            elif action == 'options':
+                game_state = OPTIONS
+            elif action == 'quit':
+                running = False
+                
+            start_screen.draw(screen)
+            
+        elif game_state == PLAYING:
+            # Run the main gameplay loop and get the result
+            result = run_game_loop(screen, SCREEN_WIDTH, SCREEN_HEIGHT)
+            
+            if result == 'quit':
+                running = False
+            elif result == 'menu':
+                game_state = MENU
+            
+        elif game_state == OPTIONS:
+            # In the future, you can add options menu handling here
+            # For now, just go back to menu if any key is pressed
+            keys = pygame.key.get_pressed()
+            if any(keys):
+                game_state = MENU
+            
+            # Draw a simple options screen placeholder
+            screen.fill((50, 50, 50))
+            font = pygame.font.Font(None, 50)
+            text = font.render("Options Menu (Coming Soon)", True, (255, 255, 255))
+            text_rect = text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            screen.blit(text, text_rect)
+            
+            back_text = font.render("Press any key to return", True, (200, 200, 200))
+            back_rect = back_text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 50))
+            screen.blit(back_text, back_rect)
+        
+        # Update display
+        pygame.display.flip()
+        
+        # Control menu animation speed
         clock.tick(60)
     
     # Clean up
