@@ -34,7 +34,7 @@ def setup_display(width, height, title):
     
     try:
         # Load the image to use as the window icon
-        icon = pygame.image.load(os.path.join('assets', 'game_icon.png'))
+        icon = pygame.image.load(os.path.join('assets', 'logo.png'))
         pygame.display.set_icon(icon)
         print("Window icon set successfully")
     except Exception as e:
@@ -211,7 +211,7 @@ def run_game():
     SCREEN_HEIGHT = 600
     
     # Set up the display
-    screen = setup_display(SCREEN_WIDTH, SCREEN_HEIGHT, "Chiraq Apocalypse")
+    screen = setup_display(SCREEN_WIDTH, SCREEN_HEIGHT, "Chiraq, Inc.")
     
     # Create start screen
     start_screen = StartScreen(SCREEN_WIDTH, SCREEN_HEIGHT)

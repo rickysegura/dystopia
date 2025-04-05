@@ -66,19 +66,19 @@ class StartScreen:
         
         # Load background image
         try:
-            self.background = load_image('start_background.png')
+            self.background = load_image('background.png')
             self.background = pygame.transform.scale(self.background, (screen_width, screen_height))
         except:
             self.background = None
             
         # Load logo image
         try:
-            self.logo = load_image('game_logo.png')
+            self.logo = load_image('logo.png')
             # Scale logo to appropriate size (adjust as needed)
-            logo_width = int(screen_width * 0.8)
+            logo_width = int(screen_width * 0.25)
             logo_height = int(logo_width * (self.logo.get_height() / self.logo.get_width()))
             self.logo = pygame.transform.scale(self.logo, (logo_width, logo_height))
-            self.logo_rect = self.logo.get_rect(centerx=screen_width//2, y=screen_height//6)
+            self.logo_rect = self.logo.get_rect(centerx=screen_width//2, y=screen_height//7)
         except:
             self.logo = None
             
@@ -184,47 +184,3 @@ class StartScreen:
                 return 'quit'
                 
         return None
-
-
-def run_start_screen():
-    """
-    Run the start screen as a standalone demo.
-    This is for testing purposes only.
-    """
-    pygame.init()
-    screen_width = 800
-    screen_height = 600
-    screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Chiraq Apocalypse - Start Screen")
-    
-    start_screen = StartScreen(screen_width, screen_height)
-    clock = pygame.time.Clock()
-    
-    running = True
-    while running:
-        events = pygame.event.get()
-        for event in events:
-            if event.type == pygame.QUIT:
-                running = False
-                
-        action = start_screen.update(events)
-        if action == 'play':
-            print("Start game!")
-            # In the real game, this would start the main game loop
-        elif action == 'options':
-            print("Open options menu!")
-            # In the real game, this would open the options menu
-        elif action == 'quit':
-            print("Quit game!")
-            running = False
-            
-        start_screen.draw(screen)
-        pygame.display.flip()
-        clock.tick(60)
-        
-    pygame.quit()
-    sys.exit()
-
-
-if __name__ == "__main__":
-    run_start_screen()
