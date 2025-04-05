@@ -1,28 +1,24 @@
+"""
+Spritesheet utilities for the Chiraq Apocalypse game.
+
+This module provides functions for extracting frames from spritesheets.
+"""
+
 import pygame
-import os
 
-# Helper function to load images
-def load_image(name, colorkey=None, scale=1):
-    fullname = os.path.join('assets', name)
-    try:
-        image = pygame.image.load(fullname)
-    except pygame.error as message:
-        print(f"Cannot load image: {name}")
-        raise SystemExit(message)
-    
-    image = image.convert_alpha()
-    if scale != 1:
-        size = image.get_width() * scale, image.get_height() * scale
-        image = pygame.transform.scale(image, size)
-    
-    if colorkey is not None:
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-    return image
-
-# Function to extract frames from a horizontal sprite sheet
 def get_frames_from_spritesheet(spritesheet, frame_width, frame_height, colorkey=None):
+    """
+    Extract individual frames from a horizontal spritesheet.
+    
+    Args:
+        spritesheet (pygame.Surface): The spritesheet image
+        frame_width (int): Width of each frame in the spritesheet
+        frame_height (int): Height of each frame in the spritesheet
+        colorkey (tuple, optional): Color to make transparent
+        
+    Returns:
+        list: List of pygame.Surface objects, one for each frame
+    """
     sheet_width = spritesheet.get_width()
     
     # Calculate number of frames in the sheet

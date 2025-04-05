@@ -1,8 +1,8 @@
 import pygame
 import sys
 import os
-from player import Player
-from game_platform import Platform
+from entities.player import Player
+from world.game_platform import Platform
 
 # Initialize pygame
 pygame.init()
