@@ -44,22 +44,6 @@ python main.py
 - **Up Arrow/W/Space**: Jump
 - **ESC**: Return to menu
 
-## Project Structure
-```
-dystopia/
-├── assets/             # Game assets (images, sounds)
-├── entities/           # Game entities (player, enemies)
-│   └── player.py       # Player class and controls
-├── world/              # World elements
-│   ├── game_platform.py # Platform class
-│   └── start_screen.py # Start screen UI
-├── utils/              # Utility functions
-│   ├── image.py        # Image loading utilities
-│   └── spritesheet.py  # Spritesheet handling
-├── main.py             # Main game entry point
-└── README.md           # This file
-```
-
 ## Development
 Dystopia is currently in alpha (v0.1). Planned features include:
 - Multiple levels with increasing difficulty
@@ -79,11 +63,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 ## License
-[Insert your license here]
+MIT
 
 ## Acknowledgments
-- [List any acknowledgments, inspirations, or resources used]
+- Made using Pygame
 
 ---
 
-Made with ❤️ and Python
+Made with ❤️
