@@ -1,12 +1,12 @@
 # Dystopia
 
-![Game Logo](assets/logo.png)
+![Game Logo](game/assets/logo.png)
 
 ## Description
 Dystopia is a 2D platformer game set in a bleak post-apocalyptic world. Navigate through the ruins of a once-thriving urban landscape, overcome obstacles, and survive in this challenging environment.
 
 ## Screenshots
-[Insert screenshots here]
+![Gameplay](game/assets/demo.gif)
 
 ## Features
 - Fluid character movement with animations
