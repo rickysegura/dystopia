@@ -66,8 +66,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 MIT
 
 ## Acknowledgments
-- Made using Pygame
+- Made with ❤️ and Pygame
 
 ---
-
-Made with ❤️
