@@ -1,7 +1,7 @@
 """
-Chiraq Apocalypse - Main Game Module
+Dystopia - Main Game Module
 
-This is the entry point for the Chiraq Apocalypse game. It initializes the game,
+This is the entry point for the Dystopia game. It initializes the game,
 sets up the game world, and manages the main game loop.
 
 Usage:
@@ -9,14 +9,17 @@ Usage:
     $ python main.py
 """
 
+
+# Imports
 import pygame
 import sys
 import os
 from entities.player import Player
 from world.game_platform import Platform
-from world.start_screen import StartScreen  # Import the new StartScreen module
+from world.start_screen import StartScreen
 
 
+# Setup game display
 def setup_display(width, height, title):
     """
     Initialize the game display with the specified dimensions and title.
@@ -43,6 +46,7 @@ def setup_display(width, height, title):
     return screen
 
 
+# Load game background
 def load_game_background(width, height):
     """
     Load and scale the game background image.
@@ -61,6 +65,7 @@ def load_game_background(width, height):
         return None
 
 
+# Create platforms
 def create_platforms(screen_height, screen_width):
     """
     Create the platforms for the game world.
@@ -95,6 +100,7 @@ def create_platforms(screen_height, screen_width):
     return all_sprites, platforms
 
 
+# Handle events
 def handle_events(player):
     """
     Process all game events.
@@ -127,6 +133,7 @@ def handle_events(player):
     return None
 
 
+# Main game loop
 def run_game_loop(screen, screen_width, screen_height):
     """
     Run the main gameplay loop.
